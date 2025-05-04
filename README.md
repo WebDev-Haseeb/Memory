@@ -117,6 +117,4 @@ The game adapts beautifully to different screen sizes:
 
 ---
 
-Made with ❤️ by Haseeb!
-
-![Visitors](https://visitor-badge.glitch.me/badge?page_id=WebDev-Haseeb.memory) 
+Made with ❤️ by **Haseeb**!
