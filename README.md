@@ -1,4 +1,4 @@
-# Memory Card Game
+# Memory Game
 
 ![Memory Card Game](https://img.shields.io/badge/Memory-Card%20Game-6c5ce7)
 ![HTML](https://img.shields.io/badge/HTML-5-orange)
@@ -43,6 +43,22 @@ An immersive, visually stunning memory card matching game with beautiful animati
 - **LocalStorage API**: Persistent record storage
 - **CSS Animations**: Extensive use of keyframes and transitions
 - **Responsive Design**: Flexible layouts that adapt to any device
+
+## 🚀 Getting Started
+
+### Play Now
+
+Simply open the `index.html` file in any modern browser to start playing!
+
+### Project Structure
+
+```
+memory-game/
+├── index.html         # Main HTML file
+├── styles.css         # CSS styling
+├── script.js          # Game logic
+└── favicon.svg        # Game icon
+```
 
 ## 🖌️ Design Highlights
 
@@ -92,8 +108,15 @@ The game adapts beautifully to different screen sizes:
 - Custom card uploading
 - Difficulty progression system
 
+## 📋 Game Controls
+
+- **Mouse/Touch**: Click or tap cards to flip them
+- **ESC Key**: Return to menu
+- **R Key**: Restart current game
+- **M Key**: Toggle sound on/off
+
 ---
 
-Made with ❤️ by Memory Game Creator
+Made with ❤️ by Haseeb!
 
-![Visitors](https://visitor-badge.glitch.me/badge?page_id=your-username.memory-game) 
+![Visitors](https://visitor-badge.glitch.me/badge?page_id=WebDev-Haseeb.memory) 
