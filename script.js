@@ -28,6 +28,7 @@ let soundEnabled = true;
 let currentDifficulty = '';
 let gameStarted = false;
 let isProcessing = false;
+let clickLocked = false; // Additional lock for rapid clicking
 let cardIcons = [
     'fa-heart', 'fa-star', 'fa-bolt', 'fa-cloud', 'fa-moon', 'fa-sun',
     'fa-bell', 'fa-fire', 'fa-gem', 'fa-snowflake', 'fa-tree', 'fa-crown',
@@ -45,21 +46,68 @@ const difficultiesConfig = {
 // Audio elements
 const flipSound = new Audio();
 flipSound.src = 'https://assets.mixkit.co/active_storage/sfx/2073/2073-preview.mp3';
+flipSound.volume = 0.5;
 
 const matchSound = new Audio();
 matchSound.src = 'https://assets.mixkit.co/active_storage/sfx/270/270-preview.mp3';
+matchSound.volume = 0.6;
 
 const victorySound = new Audio();
 victorySound.src = 'https://assets.mixkit.co/active_storage/sfx/1010/1010-preview.mp3';
+victorySound.volume = 0.7;
 
 const wrongMatchSound = new Audio();
 wrongMatchSound.src = 'https://assets.mixkit.co/active_storage/sfx/2/2-preview.mp3';
+wrongMatchSound.volume = 0.4;
+
+const clickSound = new Audio();
+clickSound.src = 'https://assets.mixkit.co/active_storage/sfx/1115/1115-preview.mp3';
+clickSound.volume = 0.3;
 
 // Initialize the game
 function initGame() {
+    // Check if browser supports localStorage
+    if (!storageAvailable('localStorage')) {
+        console.warn('LocalStorage is not available. Game records will not be saved.');
+    }
+    
     loadRecords();
     addEventListeners();
     showMenuScreen();
+    
+    // Check if sound preference was previously set
+    const savedSoundSetting = localStorage.getItem('soundEnabled');
+    if (savedSoundSetting !== null) {
+        soundEnabled = savedSoundSetting === 'true';
+        updateSoundIcon();
+    }
+    
+    // Preload sounds
+    preloadSounds();
+}
+
+// Check if storage is available
+function storageAvailable(type) {
+    try {
+        const storage = window[type];
+        const x = '__storage_test__';
+        storage.setItem(x, x);
+        storage.removeItem(x);
+        return true;
+    } catch (e) {
+        return false;
+    }
+}
+
+// Preload sounds to avoid delay on first play
+function preloadSounds() {
+    [flipSound, matchSound, victorySound, wrongMatchSound, clickSound].forEach(sound => {
+        sound.load();
+        // Play and immediately pause to initialize
+        sound.play().catch(() => {/* Silently catch any autoplay restrictions */});
+        sound.pause();
+        sound.currentTime = 0;
+    });
 }
 
 // Event listeners
@@ -67,41 +115,107 @@ function addEventListeners() {
     // Difficulty buttons
     difficultyBtns.forEach(btn => {
         btn.addEventListener('click', () => {
+            playSound(clickSound);
             const difficulty = btn.getAttribute('data-difficulty');
             startGame(difficulty);
         });
     });
     
     // Game control buttons
-    restartBtn.addEventListener('click', restartGame);
-    menuBtn.addEventListener('click', showMenuScreen);
-    playAgainBtn.addEventListener('click', restartGame);
-    backToMenuBtn.addEventListener('click', showMenuScreen);
+    restartBtn.addEventListener('click', () => {
+        playSound(clickSound);
+        restartGame();
+    });
+    
+    menuBtn.addEventListener('click', () => {
+        playSound(clickSound);
+        showMenuScreen();
+    });
+    
+    playAgainBtn.addEventListener('click', () => {
+        playSound(clickSound);
+        restartGame();
+    });
+    
+    backToMenuBtn.addEventListener('click', () => {
+        playSound(clickSound);
+        showMenuScreen();
+    });
     
     // Sound toggle
     toggleSoundBtn.addEventListener('click', toggleSound);
+    
+    // Handle keyboard shortcuts
+    document.addEventListener('keydown', handleKeyPress);
+    
+    // Handle visibility change to pause game when tab is inactive
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+}
+
+// Handle key presses
+function handleKeyPress(e) {
+    // ESC key to return to menu
+    if (e.key === 'Escape') {
+        showMenuScreen();
+    }
+    
+    // R key to restart game
+    if (e.key === 'r' && currentDifficulty) {
+        restartGame();
+    }
+    
+    // M key to toggle sound
+    if (e.key === 'm') {
+        toggleSound();
+    }
+}
+
+// Handle page visibility changes
+function handleVisibilityChange() {
+    if (document.hidden && gameStarted) {
+        // Pause timer when tab is inactive
+        clearInterval(timerInterval);
+    } else if (!document.hidden && gameStarted && !matchedCards.length === cards.length) {
+        // Resume timer when tab is active again
+        startTimer();
+    }
 }
 
 // Toggle sound
 function toggleSound() {
     soundEnabled = !soundEnabled;
-    soundIcon.className = soundEnabled ? 'fas fa-volume-up' : 'fas fa-volume-mute';
+    updateSoundIcon();
+    
+    // Save sound preference
+    localStorage.setItem('soundEnabled', soundEnabled);
     
     // Add a quick animation
     toggleSoundBtn.classList.add('pulse');
     setTimeout(() => toggleSoundBtn.classList.remove('pulse'), 300);
 }
 
+// Update sound icon based on current state
+function updateSoundIcon() {
+    soundIcon.className = soundEnabled ? 'fas fa-volume-up' : 'fas fa-volume-mute';
+}
+
 // Play sound
 function playSound(sound) {
     if (soundEnabled) {
-        sound.currentTime = 0;
-        sound.play();
+        // Clone the sound to avoid issues with overlapping plays
+        const soundClone = sound.cloneNode();
+        soundClone.volume = sound.volume;
+        soundClone.play().catch(() => {/* Silently catch any autoplay restrictions */});
     }
 }
 
 // Start a new game with the selected difficulty
 function startGame(difficulty) {
+    if (!difficulty) {
+        console.error('No difficulty selected');
+        return;
+    }
+    
     currentDifficulty = difficulty;
     const config = difficultiesConfig[difficulty];
     
@@ -112,6 +226,8 @@ function startGame(difficulty) {
     moves = 0;
     timer = 0;
     gameStarted = false;
+    isProcessing = false;
+    clickLocked = false;
     
     // Update UI
     movesElement.textContent = moves;
@@ -126,9 +242,25 @@ function startGame(difficulty) {
     // Update the game board layout
     gameBoard.style.gridTemplateColumns = `repeat(${config.cols}, 1fr)`;
     
+    // Adjust sizes for optimal viewing
+    const cardSize = calculateOptimalCardSize(config.cols, config.rows);
+    document.documentElement.style.setProperty('--card-size', `${cardSize}px`);
+    
     // Hide menu screen
     menuScreen.style.display = 'none';
     victoryScreen.style.display = 'none';
+}
+
+// Calculate optimal card size based on viewport and grid dimensions
+function calculateOptimalCardSize(cols, rows) {
+    const containerWidth = gameBoard.clientWidth;
+    const containerHeight = gameBoard.clientHeight;
+    
+    const maxCardWidth = (containerWidth / cols) - 16; // Account for gap
+    const maxCardHeight = (containerHeight / rows) - 16; // Account for gap
+    
+    // Use whichever is smaller to ensure cards fit
+    return Math.min(maxCardWidth, (maxCardHeight * 0.75)); // Keep aspect ratio
 }
 
 // Generate cards for the game
@@ -189,18 +321,24 @@ function renderCards() {
 // Handle card click
 function handleCardClick(cardId) {
     // Ignore clicks if already processing a pair or card is already flipped/matched
-    if (isProcessing) return;
+    if (isProcessing || clickLocked) return;
     
     const card = cards.find(c => c.id === cardId);
     
     // Ignore clicks on already flipped or matched cards
-    if (card.isFlipped || card.isMatched) return;
+    if (!card || card.isFlipped || card.isMatched) return;
     
     // Start timer on first move
     if (!gameStarted) {
         startTimer();
         gameStarted = true;
     }
+    
+    // Briefly lock clicks to prevent double-click issues
+    clickLocked = true;
+    setTimeout(() => {
+        clickLocked = false;
+    }, 300);
     
     // Flip the card
     card.isFlipped = true;
@@ -243,6 +381,15 @@ function checkForMatch() {
         card1.isFlipped = false;
         card2.isFlipped = false;
         playSound(wrongMatchSound);
+        
+        // Add wrong animation class
+        const cardElements = document.querySelectorAll('.card.flipped');
+        cardElements.forEach(el => {
+            el.classList.add('wrong');
+            setTimeout(() => {
+                el.classList.remove('wrong');
+            }, 500);
+        });
     }
     
     // Clear flipped cards
@@ -254,6 +401,9 @@ function checkForMatch() {
 
 // Start the timer
 function startTimer() {
+    // Clear any existing timer first
+    clearInterval(timerInterval);
+    
     timerInterval = setInterval(() => {
         timer++;
         timeElement.textContent = formatTime(timer);
@@ -282,7 +432,7 @@ function gameWon() {
         updateRecordDisplay();
     }
     
-    // Show victory screen
+    // Show victory screen with slight delay for animations to finish
     setTimeout(() => {
         playSound(victorySound);
         victoryScreen.style.display = 'flex';
@@ -291,6 +441,12 @@ function gameWon() {
 
 // Restart the current game
 function restartGame() {
+    if (!currentDifficulty) {
+        // If no game has been started yet, just show the menu
+        showMenuScreen();
+        return;
+    }
+    
     startGame(currentDifficulty);
 }
 
@@ -318,6 +474,16 @@ function updateRecordDisplay() {
     easyRecordElement.textContent = easyRecord ? formatTime(parseInt(easyRecord)) : '--:--';
     mediumRecordElement.textContent = mediumRecord ? formatTime(parseInt(mediumRecord)) : '--:--';
     hardRecordElement.textContent = hardRecord ? formatTime(parseInt(hardRecord)) : '--:--';
+}
+
+// Reset all game records
+function resetRecords() {
+    if (confirm('Are you sure you want to reset all game records?')) {
+        localStorage.removeItem('record_easy');
+        localStorage.removeItem('record_medium');
+        localStorage.removeItem('record_hard');
+        updateRecordDisplay();
+    }
 }
 
 // Initialize the game
