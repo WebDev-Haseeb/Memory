@@ -57,8 +57,8 @@ victorySound.src = 'https://assets.mixkit.co/active_storage/sfx/1010/1010-previe
 victorySound.volume = 0.7;
 
 const wrongMatchSound = new Audio();
-wrongMatchSound.src = 'https://assets.mixkit.co/active_storage/sfx/2/2-preview.mp3';
-wrongMatchSound.volume = 0.4;
+wrongMatchSound.src = 'https://assets.mixkit.co/active_storage/sfx/209/209-preview.mp3';
+wrongMatchSound.volume = 0.3;
 
 const clickSound = new Audio();
 clickSound.src = 'https://assets.mixkit.co/active_storage/sfx/1115/1115-preview.mp3';
@@ -256,11 +256,15 @@ function calculateOptimalCardSize(cols, rows) {
     const containerWidth = gameBoard.clientWidth;
     const containerHeight = gameBoard.clientHeight;
     
-    const maxCardWidth = (containerWidth / cols) - 16; // Account for gap
-    const maxCardHeight = (containerHeight / rows) - 16; // Account for gap
+    // Ensure minimum card sizes regardless of screen size
+    const minCardSize = 80;
     
-    // Use whichever is smaller to ensure cards fit
-    return Math.min(maxCardWidth, (maxCardHeight * 0.75)); // Keep aspect ratio
+    // Calculate available space accounting for gaps
+    const maxCardWidth = Math.max((containerWidth / cols) - 16, minCardSize); // Account for gap
+    const maxCardHeight = Math.max((containerHeight / rows) - 16, minCardSize); // Account for gap
+    
+    // Use aspect ratio but ensure minimum size
+    return Math.max(Math.min(maxCardWidth, (maxCardHeight * 0.75)), minCardSize); // Keep aspect ratio
 }
 
 // Generate cards for the game
