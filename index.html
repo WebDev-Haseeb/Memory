@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memory Game</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Memory Game</h1>
+            <div class="game-info">
+                <div class="timer">
+                    <i class="fas fa-clock"></i>
+                    <span id="time">00:00</span>
+                </div>
+                <div class="moves">
+                    <i class="fas fa-sync-alt"></i>
+                    <span id="moves">0</span> moves
+                </div>
+            </div>
+        </header>
+
+        <div class="menu-screen" id="menu-screen">
+            <div class="menu-content">
+                <h2>Choose Difficulty</h2>
+                <div class="difficulty-options">
+                    <button class="difficulty-btn" data-difficulty="easy">Easy (4×3)</button>
+                    <button class="difficulty-btn" data-difficulty="medium">Medium (6×3)</button>
+                    <button class="difficulty-btn" data-difficulty="hard">Hard (6×4)</button>
+                </div>
+                <div class="records-section">
+                    <h3>Best Times</h3>
+                    <div class="records">
+                        <div class="record-item">
+                            <span>Easy:</span>
+                            <span id="easy-record">--:--</span>
+                        </div>
+                        <div class="record-item">
+                            <span>Medium:</span>
+                            <span id="medium-record">--:--</span>
+                        </div>
+                        <div class="record-item">
+                            <span>Hard:</span>
+                            <span id="hard-record">--:--</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="game-container">
+            <div class="game-board" id="game-board"></div>
+            <div class="game-controls">
+                <button id="restart-btn" class="control-btn">
+                    <i class="fas fa-redo"></i> Restart
+                </button>
+                <button id="menu-btn" class="control-btn">
+                    <i class="fas fa-home"></i> Menu
+                </button>
+            </div>
+        </div>
+
+        <div class="victory-screen" id="victory-screen">
+            <div class="victory-content">
+                <h2><i class="fas fa-trophy"></i> Congratulations!</h2>
+                <p>You've completed the game in <span id="final-time">00:00</span> with <span id="final-moves">0</span> moves!</p>
+                <div class="victory-buttons">
+                    <button id="play-again-btn" class="victory-btn">Play Again</button>
+                    <button id="back-to-menu-btn" class="victory-btn">Back to Menu</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>Created with <i class="fas fa-heart"></i> by Memory Game Creator</p>
+    </footer>
+
+    <div class="audio-controls">
+        <button id="toggle-sound" class="audio-btn">
+            <i class="fas fa-volume-up" id="sound-icon"></i>
+        </button>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html> 
