@@ -16,10 +16,15 @@ const difficultyBtns = document.querySelectorAll('.difficulty-btn');
 const easyRecordElement = document.getElementById('easy-record');
 const mediumRecordElement = document.getElementById('medium-record');
 const hardRecordElement = document.getElementById('hard-record');
+const scoresBtn = document.getElementById('scores-btn');
+const scoresScreen = document.getElementById('scores-screen');
+const closeScoresBtn = document.getElementById('close-scores-btn');
+const resetScoresBtn = document.getElementById('reset-scores-btn');
 
 // Add a new element
 const menuContent = document.querySelector('.menu-content');
 const victoryContent = document.querySelector('.victory-content');
+const scoresContent = document.querySelector('.scores-content');
 
 // Game state variables
 let cards = [];
@@ -146,6 +151,22 @@ function addEventListeners() {
         showMenuScreen();
     });
     
+    // Scores buttons
+    scoresBtn.addEventListener('click', () => {
+        playSound(clickSound);
+        showScoresScreen();
+    });
+    
+    closeScoresBtn.addEventListener('click', () => {
+        playSound(clickSound);
+        hideScoresScreen();
+    });
+    
+    resetScoresBtn.addEventListener('click', () => {
+        playSound(clickSound);
+        resetRecords();
+    });
+    
     // Sound toggle
     toggleSoundBtn.addEventListener('click', toggleSound);
     
@@ -182,6 +203,18 @@ function addEventListeners() {
         e.stopPropagation();
     });
     
+    // Close scores screen when clicking outside
+    scoresScreen.addEventListener('click', (e) => {
+        if (e.target === scoresScreen) {
+            hideScoresScreen();
+        }
+    });
+    
+    // Prevent clicks on scores content from bubbling to parent
+    scoresContent.addEventListener('click', (e) => {
+        e.stopPropagation();
+    });
+    
     // Add confetti effect on victory
     document.addEventListener('confetti', createConfetti);
 }
@@ -190,7 +223,12 @@ function addEventListeners() {
 function handleKeyPress(e) {
     // ESC key to return to menu
     if (e.key === 'Escape') {
-        showMenuScreen();
+        // If scores screen is visible, close it first
+        if (scoresScreen.style.display === 'flex') {
+            hideScoresScreen();
+        } else {
+            showMenuScreen();
+        }
     }
     
     // R key to restart game
@@ -201,6 +239,15 @@ function handleKeyPress(e) {
     // M key to toggle sound
     if (e.key === 'm') {
         toggleSound();
+    }
+    
+    // S key to show/hide scores
+    if (e.key === 's') {
+        if (scoresScreen.style.display === 'flex') {
+            hideScoresScreen();
+        } else {
+            showScoresScreen();
+        }
     }
 }
 
@@ -553,6 +600,19 @@ function resetRecords() {
         localStorage.removeItem('record_medium');
         localStorage.removeItem('record_hard');
         updateRecordDisplay();
+        
+        // Add visual feedback
+        const records = document.querySelectorAll('.record-item span:last-child');
+        records.forEach(record => {
+            record.style.transition = 'all 0.3s ease';
+            record.style.color = '#fd79a8';
+        });
+        
+        setTimeout(() => {
+            records.forEach(record => {
+                record.style.color = '';
+            });
+        }, 1000);
     }
 }
 
@@ -584,6 +644,17 @@ function createConfetti() {
     setTimeout(() => {
         confettiContainer.remove();
     }, 8000);
+}
+
+// Show scores screen
+function showScoresScreen() {
+    updateRecordDisplay();
+    scoresScreen.style.display = 'flex';
+}
+
+// Hide scores screen
+function hideScoresScreen() {
+    scoresScreen.style.display = 'none';
 }
 
 // Initialize the game

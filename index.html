@@ -35,23 +35,6 @@
                     <button class="difficulty-btn" data-difficulty="medium">Medium (6×3)</button>
                     <button class="difficulty-btn" data-difficulty="hard">Hard (6×4)</button>
                 </div>
-                <div class="records-section">
-                    <h3>Best Times</h3>
-                    <div class="records">
-                        <div class="record-item">
-                            <span>Easy:</span>
-                            <span id="easy-record">--:--</span>
-                        </div>
-                        <div class="record-item">
-                            <span>Medium:</span>
-                            <span id="medium-record">--:--</span>
-                        </div>
-                        <div class="record-item">
-                            <span>Hard:</span>
-                            <span id="hard-record">--:--</span>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
 
@@ -64,6 +47,9 @@
                 <button id="menu-btn" class="control-btn">
                     <i class="fas fa-home"></i> Menu
                 </button>
+                <button id="scores-btn" class="control-btn">
+                    <i class="fas fa-trophy"></i> Scores
+                </button>
             </div>
         </div>
 
@@ -75,6 +61,32 @@
                     <button id="play-again-btn" class="victory-btn">Play Again</button>
                     <button id="back-to-menu-btn" class="victory-btn">Back to Menu</button>
                 </div>
+            </div>
+        </div>
+
+        <div class="scores-screen" id="scores-screen">
+            <div class="scores-content">
+                <h2><i class="fas fa-trophy"></i> Best Times</h2>
+                <div class="records">
+                    <div class="record-item">
+                        <span>Easy:</span>
+                        <span id="easy-record">--:--</span>
+                    </div>
+                    <div class="record-item">
+                        <span>Medium:</span>
+                        <span id="medium-record">--:--</span>
+                    </div>
+                    <div class="record-item">
+                        <span>Hard:</span>
+                        <span id="hard-record">--:--</span>
+                    </div>
+                </div>
+                <button id="reset-scores-btn" class="reset-scores-btn">
+                    <i class="fas fa-trash-alt"></i> Reset Records
+                </button>
+                <button id="close-scores-btn" class="scores-btn">
+                    <i class="fas fa-times"></i> Close
+                </button>
             </div>
         </div>
     </div>

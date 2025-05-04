@@ -26,9 +26,10 @@ body {
     font-family: 'Poppins', sans-serif;
     background-color: #f9f9f9;
     background-image: 
-        radial-gradient(circle at 25% 25%, rgba(108, 92, 231, 0.05) 0%, transparent 50%),
-        radial-gradient(circle at 75% 75%, rgba(253, 121, 168, 0.05) 0%, transparent 50%),
+        radial-gradient(circle at 25% 25%, rgba(108, 92, 231, 0.08) 0%, transparent 50%),
+        radial-gradient(circle at 75% 75%, rgba(253, 121, 168, 0.08) 0%, transparent 50%),
         linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    background-attachment: fixed;
     color: var(--text-color);
     min-height: 100vh;
     display: flex;
@@ -154,27 +155,36 @@ h1::after {
     left: 0;
     width: 100%;
     height: 100%;
-    background: radial-gradient(circle at center, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.95) 100%);
+    background: radial-gradient(circle at center, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.9) 100%);
     display: flex;
     justify-content: center;
     align-items: center;
     z-index: 100;
     backdrop-filter: blur(10px);
+    animation: fadeIn 0.3s ease;
 }
 
 .menu-content {
-    background: white;
-    padding: 3rem;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 2.2rem 2.5rem;
     border-radius: var(--border-radius);
     box-shadow: 
         0 20px 60px rgba(0,0,0,0.2),
-        0 0 0 2px rgba(108, 92, 231, 0.2);
-    max-width: 550px;
+        0 0 0 2px rgba(108, 92, 231, 0.2),
+        inset 0 0 30px rgba(255, 255, 255, 0.5);
+    max-width: 500px;
     width: 90%;
+    max-height: 80vh;
     text-align: center;
     animation: fadeIn 0.5s ease, floatMenu 3s ease-in-out infinite;
     position: relative;
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
 }
 
 @keyframes floatMenu {
@@ -193,7 +203,7 @@ h1::after {
 }
 
 .menu-content h2 {
-    margin-bottom: 2rem;
+    margin-bottom: 1.5rem;
     font-weight: 700;
     font-size: 2rem;
     color: var(--dark-color);
@@ -204,7 +214,7 @@ h1::after {
 .menu-content h2::after {
     content: '';
     position: absolute;
-    bottom: -10px;
+    bottom: -8px;
     left: 50%;
     transform: translateX(-50%);
     width: 60px;
@@ -217,11 +227,11 @@ h1::after {
     display: flex;
     flex-direction: column;
     gap: 1rem;
-    margin-bottom: 2.5rem;
+    margin-bottom: 0;
 }
 
 .difficulty-btn {
-    padding: 1rem 1.5rem;
+    padding: 1.2rem 1.5rem;
     border-radius: var(--border-radius);
     border: none;
     background: var(--light-color);
@@ -230,7 +240,7 @@ h1::after {
     font-weight: 600;
     font-size: 1.1rem;
     cursor: pointer;
-    transition: var(--transition);
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
     position: relative;
     overflow: hidden;
@@ -252,12 +262,25 @@ h1::after {
 .difficulty-btn:hover {
     background: var(--gradient-bg);
     color: white;
-    transform: translateY(-3px) scale(1.02);
-    box-shadow: 0 10px 30px rgba(108, 92, 231, 0.3);
+    transform: translateY(-5px) scale(1.05);
+    box-shadow: 0 15px 30px rgba(108, 92, 231, 0.4);
 }
 
 .difficulty-btn:hover::before {
     left: 100%;
+}
+
+/* Add different color accents for each difficulty */
+.difficulty-btn[data-difficulty="easy"] {
+    border-left: 4px solid #00b894;
+}
+
+.difficulty-btn[data-difficulty="medium"] {
+    border-left: 4px solid #fdcb6e;
+}
+
+.difficulty-btn[data-difficulty="hard"] {
+    border-left: 4px solid #fd79a8;
 }
 
 .records-section {
@@ -305,23 +328,43 @@ h1::after {
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
+    margin-bottom: 0.5rem;
 }
 
 .record-item {
     display: flex;
     justify-content: space-between;
-    padding: 0.75rem 1.5rem;
-    background: var(--light-color);
+    padding: 1rem 1.5rem;
+    background: rgba(245, 247, 250, 0.8);
     border-radius: var(--border-radius);
-    transition: var(--transition);
+    transition: all 0.3s ease;
     font-weight: 500;
     border-left: 4px solid transparent;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    margin-bottom: 0.75rem;
+}
+
+.record-item:last-child {
+    margin-bottom: 0;
 }
 
 .record-item:hover {
-    background: linear-gradient(to right, var(--light-color), #e9f0ff);
-    transform: translateX(5px);
+    background: linear-gradient(to right, rgba(240, 244, 255, 0.9), rgba(233, 240, 255, 0.9));
+    transform: translateX(5px) scale(1.02);
     border-left: 4px solid var(--primary-color);
+    box-shadow: 0 8px 20px rgba(108, 92, 231, 0.2);
+}
+
+.record-item:first-child {
+    border-left-color: #00b894;
+}
+
+.record-item:nth-child(2) {
+    border-left-color: #fdcb6e;
+}
+
+.record-item:nth-child(3) {
+    border-left-color: #fd79a8;
 }
 
 .record-item span:first-child {
@@ -427,12 +470,14 @@ h1::after {
 }
 
 .card:hover .card-inner {
-    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
-    transform: translateY(-5px);
+    box-shadow: 
+        0 15px 40px rgba(0, 0, 0, 0.2),
+        0 0 0 3px rgba(108, 92, 231, 0.2);
+    transform: translateY(-8px) scale(1.02);
 }
 
 .card.flipped:hover .card-inner {
-    transform: rotateY(180deg) translateY(-5px);
+    transform: rotateY(180deg) translateY(-8px) scale(1.02);
 }
 
 .card-inner {
@@ -572,7 +617,9 @@ h1::after {
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    box-shadow: var(--shadow);
+    box-shadow: 
+        0 10px 30px rgba(0, 0, 0, 0.1),
+        0 0 0 2px rgba(108, 92, 231, 0.1);
     position: relative;
     overflow: hidden;
     letter-spacing: 0.5px;
@@ -593,7 +640,9 @@ h1::after {
     background: var(--primary-color);
     color: white;
     transform: translateY(-5px);
-    box-shadow: 0 10px 30px rgba(108, 92, 231, 0.3);
+    box-shadow: 
+        0 15px 30px rgba(108, 92, 231, 0.3),
+        0 0 0 3px rgba(108, 92, 231, 0.2);
 }
 
 .control-btn:hover::before {
@@ -611,34 +660,32 @@ h1::after {
     left: 0;
     width: 100%;
     height: 100%;
-    background: radial-gradient(circle at center, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.95) 100%);
+    background: radial-gradient(circle at center, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.9) 100%);
     display: none;
     justify-content: center;
     align-items: center;
     z-index: 100;
     backdrop-filter: blur(10px);
+    animation: fadeIn 0.3s ease;
 }
 
 .victory-content {
-    background: white;
-    padding: 3rem;
+    background: rgba(255, 255, 255, 0.95);
+    padding: 2.5rem;
     border-radius: var(--border-radius);
     box-shadow: 
         0 20px 60px rgba(0,0,0,0.2),
-        0 0 0 2px rgba(0, 184, 148, 0.2);
+        0 0 0 2px rgba(0, 184, 148, 0.2),
+        inset 0 0 30px rgba(255, 255, 255, 0.5);
     max-width: 550px;
     width: 90%;
     text-align: center;
     animation: bounceIn 0.7s cubic-bezier(0.68, -0.55, 0.27, 1.55), celebrateShake 0.5s 1s ease-in-out;
     position: relative;
     overflow: hidden;
-}
-
-@keyframes celebrateShake {
-    0%, 100% { transform: rotate(0); }
-    25% { transform: rotate(-1deg); }
-    50% { transform: rotate(0); }
-    75% { transform: rotate(1deg); }
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
 }
 
 .victory-content::before {
@@ -660,6 +707,14 @@ h1::after {
     align-items: center;
     justify-content: center;
     gap: 0.75rem;
+    text-shadow: 0 2px 10px rgba(0, 184, 148, 0.3);
+}
+
+.victory-content p {
+    margin-bottom: 2.5rem;
+    font-size: 1.3rem;
+    line-height: 1.6;
+    color: var(--dark-color);
 }
 
 .victory-content h2 i {
@@ -670,12 +725,6 @@ h1::after {
     0%, 100% { transform: rotate(0); }
     25% { transform: rotate(-10deg); }
     75% { transform: rotate(10deg); }
-}
-
-.victory-content p {
-    margin-bottom: 2.5rem;
-    font-size: 1.3rem;
-    line-height: 1.6;
 }
 
 .new-record {
@@ -718,6 +767,9 @@ h1::after {
     position: relative;
     overflow: hidden;
     letter-spacing: 0.5px;
+    box-shadow: 
+        0 10px 30px rgba(0, 0, 0, 0.1),
+        0 0 0 2px rgba(108, 92, 231, 0.1);
 }
 
 .victory-btn::before {
@@ -735,11 +787,42 @@ h1::after {
     background: var(--gradient-bg);
     color: white;
     transform: translateY(-5px);
-    box-shadow: 0 10px 30px rgba(108, 92, 231, 0.3);
+    box-shadow: 
+        0 15px 30px rgba(108, 92, 231, 0.3),
+        0 0 0 3px rgba(108, 92, 231, 0.2);
 }
 
 .victory-btn:hover::before {
     left: 100%;
+}
+
+.reset-scores-btn {
+    margin-top: 1.5rem;
+    padding: 0.6rem 1.25rem;
+    border-radius: 30px;
+    border: none;
+    background: rgba(253, 121, 168, 0.1);
+    color: var(--secondary-color);
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+    width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.reset-scores-btn:hover {
+    background: var(--secondary-color);
+    color: white;
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(253, 121, 168, 0.3);
 }
 
 /* Footer */
@@ -917,11 +1000,18 @@ footer i {
 
 @media (max-width: 992px) {
     .menu-content {
-        padding: 2.5rem;
+        padding: 2rem;
+        max-width: 450px;
+    }
+    
+    .scores-content {
+        padding: 2rem;
+        max-width: 450px;
     }
     
     .victory-content {
-        padding: 2.5rem;
+        padding: 2rem;
+        max-width: 450px;
     }
     
     .card-front, .card-back {
@@ -931,48 +1021,60 @@ footer i {
 
 @media (max-width: 768px) {
     h1 {
-        font-size: 2.5rem;
+        font-size: 1.8rem;
+        margin-bottom: 0.75rem;
     }
     
     .game-info {
-        flex-direction: row;
         gap: 1rem;
     }
     
     .timer, .moves {
-        padding: 0.6rem 1.25rem;
-        min-width: 120px;
+        padding: 0.5rem 0.75rem;
     }
     
     .game-board {
-        grid-template-columns: repeat(3, 1fr);
         gap: 0.75rem;
-        padding: 0.75rem;
+        padding: 1rem;
     }
     
     .game-controls {
-        flex-direction: row;
-        gap: 1rem;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+        justify-content: center;
     }
     
-    .control-btn, .victory-btn {
-        padding: 0.75rem 1.5rem;
+    .control-btn, .victory-btn, .scores-btn {
+        padding: 0.75rem 1.25rem;
+        font-size: 0.9rem;
     }
     
     .audio-btn {
-        width: 3.5rem;
-        height: 3.5rem;
-        font-size: 1.2rem;
+        width: 42px;
+        height: 42px;
+        bottom: 1rem;
+        right: 1rem;
     }
     
     .card-front, .card-back {
+        font-size: 1.8rem;
+    }
+    
+    .menu-content h2,
+    .scores-content h2,
+    .victory-content h2 {
         font-size: 1.75rem;
+    }
+    
+    .difficulty-btn {
+        padding: 1rem;
+        font-size: 1rem;
     }
 }
 
 @media (max-width: 576px) {
     h1 {
-        font-size: 2.2rem;
+        font-size: 1.5rem;
     }
     
     .container {
@@ -980,34 +1082,43 @@ footer i {
     }
     
     .game-info {
-        flex-direction: column;
-        gap: 0.75rem;
+        font-size: 0.85rem;
     }
     
     .menu-content {
-        padding: 2rem;
+        padding: 1.5rem;
+        max-width: 90%;
+    }
+    
+    .scores-content {
+        padding: 1.5rem;
+        max-width: 90%;
     }
     
     .victory-content {
-        padding: 2rem;
+        padding: 1.5rem;
+        max-width: 90%;
     }
     
+    .menu-content h2,
+    .scores-content h2, 
     .victory-content h2 {
-        font-size: 1.8rem;
+        font-size: 1.5rem;
+        margin-bottom: 1.25rem;
     }
     
     .victory-content p {
-        font-size: 1.1rem;
+        font-size: 0.9rem;
     }
     
-    .victory-buttons {
-        flex-direction: column;
+    .victory-buttons,
+    .difficulty-options {
         gap: 0.75rem;
     }
     
-    .control-btn, .victory-btn {
-        padding: 0.7rem 1.25rem;
-        font-size: 0.9rem;
+    .control-btn, .victory-btn, .scores-btn {
+        padding: 0.6rem 1rem;
+        font-size: 0.85rem;
     }
     
     .control-btn i {
@@ -1015,11 +1126,10 @@ footer i {
     }
     
     .audio-btn {
-        width: 3rem;
-        height: 3rem;
-        font-size: 1rem;
-        bottom: 1.5rem;
-        right: 1.5rem;
+        width: 38px;
+        height: 38px;
+        bottom: 0.75rem;
+        right: 0.75rem;
     }
     
     .card-front, .card-back {
@@ -1027,6 +1137,142 @@ footer i {
     }
     
     .card-back::after {
-        font-size: 2.5rem;
+        font-size: 2rem;
+    }
+    
+    .record-item {
+        padding: 0.8rem 1rem;
+        font-size: 0.9rem;
+    }
+}
+
+/* Scores screen */
+.scores-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at center, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.9) 100%);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+    backdrop-filter: blur(10px);
+    animation: fadeIn 0.3s ease;
+}
+
+.scores-content {
+    background: rgba(255, 255, 255, 0.9);
+    padding: 2.2rem 2.5rem;
+    border-radius: var(--border-radius);
+    box-shadow: 
+        0 20px 60px rgba(0,0,0,0.2),
+        0 0 0 2px rgba(0, 184, 148, 0.2),
+        inset 0 0 30px rgba(255, 255, 255, 0.5);
+    max-width: 500px;
+    width: 90%;
+    max-height: 90vh;
+    text-align: center;
+    animation: fadeIn 0.5s ease, floatMenu 4s ease-in-out infinite alternate;
+    position: relative;
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.scores-content::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 8px;
+    background: linear-gradient(to right, var(--success-color), #55efc4);
+}
+
+.scores-content h2 {
+    margin-bottom: 1.5rem;
+    font-weight: 700;
+    font-size: 2rem;
+    color: var(--dark-color);
+    position: relative;
+    display: inline-block;
+}
+
+.scores-content h2 i {
+    color: var(--success-color);
+    margin-right: 0.5rem;
+    animation: trophyWiggle 3s infinite ease-in-out;
+}
+
+.scores-btn {
+    margin-top: 1.5rem;
+    padding: 0.85rem 1.75rem;
+    border-radius: var(--border-radius);
+    border: none;
+    background: white;
+    color: var(--dark-color);
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    box-shadow: 
+        0 10px 30px rgba(0, 0, 0, 0.1),
+        0 0 0 2px rgba(108, 92, 231, 0.1);
+    width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.scores-btn:hover {
+    background: var(--primary-color);
+    color: white;
+    transform: translateY(-5px);
+    box-shadow: 
+        0 15px 30px rgba(108, 92, 231, 0.3),
+        0 0 0 3px rgba(108, 92, 231, 0.2);
+}
+
+@keyframes celebrateShake {
+    0%, 100% { transform: rotate(0); }
+    25% { transform: rotate(-1deg); }
+    50% { transform: rotate(0); }
+    75% { transform: rotate(1deg); }
+}
+
+/* Particles background animation */
+.menu-screen::after, .scores-screen::after, .victory-screen::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: -1;
+    background-image: 
+        radial-gradient(circle at 10% 20%, rgba(108, 92, 231, 0.1) 0%, transparent 15%),
+        radial-gradient(circle at 90% 30%, rgba(253, 121, 168, 0.1) 0%, transparent 15%),
+        radial-gradient(circle at 30% 70%, rgba(0, 184, 148, 0.1) 0%, transparent 15%),
+        radial-gradient(circle at 80% 80%, rgba(253, 203, 110, 0.1) 0%, transparent 15%);
+    animation: floatingBubbles 20s infinite alternate ease-in-out;
+}
+
+@keyframes floatingBubbles {
+    0% {
+        background-position: 0% 0%, 100% 0%, 0% 100%, 100% 100%;
+    }
+    50% {
+        background-position: 10% 20%, 80% 30%, 30% 60%, 70% 80%;
+    }
+    100% {
+        background-position: 0% 30%, 100% 10%, 0% 80%, 100% 60%;
     }
 } 
