@@ -17,6 +17,10 @@ const easyRecordElement = document.getElementById('easy-record');
 const mediumRecordElement = document.getElementById('medium-record');
 const hardRecordElement = document.getElementById('hard-record');
 
+// Add a new element
+const menuContent = document.querySelector('.menu-content');
+const victoryContent = document.querySelector('.victory-content');
+
 // Game state variables
 let cards = [];
 let flippedCards = [];
@@ -150,6 +154,36 @@ function addEventListeners() {
     
     // Handle visibility change to pause game when tab is inactive
     document.addEventListener('visibilitychange', handleVisibilityChange);
+    
+    // Close menu when clicking outside the menu content
+    menuScreen.addEventListener('click', (e) => {
+        if (e.target === menuScreen) {
+            // Only close if a game is already in progress
+            if (currentDifficulty) {
+                menuScreen.style.display = 'none';
+            }
+        }
+    });
+    
+    // Prevent clicks on menu content from bubbling to parent
+    menuContent.addEventListener('click', (e) => {
+        e.stopPropagation();
+    });
+    
+    // Close victory screen when clicking outside
+    victoryScreen.addEventListener('click', (e) => {
+        if (e.target === victoryScreen) {
+            hideVictoryScreen();
+        }
+    });
+    
+    // Prevent clicks on victory content from bubbling to parent
+    victoryContent.addEventListener('click', (e) => {
+        e.stopPropagation();
+    });
+    
+    // Add confetti effect on victory
+    document.addEventListener('confetti', createConfetti);
 }
 
 // Handle key presses
@@ -219,6 +253,12 @@ function startGame(difficulty) {
     currentDifficulty = difficulty;
     const config = difficultiesConfig[difficulty];
     
+    // Remove any new record message if it exists
+    const newRecordMsg = document.querySelector('.new-record');
+    if (newRecordMsg) {
+        newRecordMsg.remove();
+    }
+    
     // Reset game state
     cards = [];
     flippedCards = [];
@@ -241,6 +281,15 @@ function startGame(difficulty) {
     
     // Update the game board layout
     gameBoard.style.gridTemplateColumns = `repeat(${config.cols}, 1fr)`;
+    
+    // Add a class to the game board for different difficulty levels
+    gameBoard.className = 'game-board ' + difficulty;
+    
+    // Add a nice animation to the game board
+    gameBoard.classList.add('board-appear');
+    setTimeout(() => {
+        gameBoard.classList.remove('board-appear');
+    }, 1000);
     
     // Adjust sizes for optimal viewing
     const cardSize = calculateOptimalCardSize(config.cols, config.rows);
@@ -431,15 +480,32 @@ function gameWon() {
     
     // Check if it's a new record
     const currentRecord = localStorage.getItem(`record_${currentDifficulty}`);
+    let isNewRecord = false;
+    
     if (!currentRecord || timer < parseInt(currentRecord)) {
         localStorage.setItem(`record_${currentDifficulty}`, timer);
         updateRecordDisplay();
+        isNewRecord = true;
     }
+    
+    // Create a custom event to trigger confetti
+    const confettiEvent = new Event('confetti');
     
     // Show victory screen with slight delay for animations to finish
     setTimeout(() => {
         playSound(victorySound);
         victoryScreen.style.display = 'flex';
+        
+        // If it's a new record, show a special message
+        if (isNewRecord) {
+            const recordMsg = document.createElement('div');
+            recordMsg.className = 'new-record';
+            recordMsg.innerHTML = '<i class="fas fa-trophy"></i> New Record!';
+            document.querySelector('.victory-content h2').after(recordMsg);
+            
+            // Dispatch the confetti event
+            document.dispatchEvent(confettiEvent);
+        }
     }, 500);
 }
 
@@ -488,6 +554,36 @@ function resetRecords() {
         localStorage.removeItem('record_hard');
         updateRecordDisplay();
     }
+}
+
+// Add a function to hide victory screen
+function hideVictoryScreen() {
+    victoryScreen.style.display = 'none';
+}
+
+// Add confetti effect for victory celebration
+function createConfetti() {
+    const confettiContainer = document.createElement('div');
+    confettiContainer.className = 'confetti-container';
+    document.body.appendChild(confettiContainer);
+    
+    const colors = ['#fd79a8', '#6c5ce7', '#00b894', '#fdcb6e', '#00cec9'];
+    
+    // Create confetti pieces
+    for (let i = 0; i < 100; i++) {
+        const confetti = document.createElement('div');
+        confetti.className = 'confetti';
+        confetti.style.left = Math.random() * 100 + 'vw';
+        confetti.style.animationDuration = (Math.random() * 3 + 2) + 's';
+        confetti.style.animationDelay = Math.random() * 2 + 's';
+        confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        confettiContainer.appendChild(confetti);
+    }
+    
+    // Remove confetti after animation completes
+    setTimeout(() => {
+        confettiContainer.remove();
+    }, 8000);
 }
 
 // Initialize the game
